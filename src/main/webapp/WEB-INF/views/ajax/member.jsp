@@ -7,11 +7,16 @@
 <title>Insert title here</title>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>   
 <script type="text/javascript">
+
+	let listSize;
    
    function getUsers(){
       $.ajax({
          url : "users", type : "get", dataType: "json",
          success : function(list){
+        	 
+        	listSize = list.length;
+        	
             console.log(list);
             let msg ="";
             list.forEach( (data)=>{
@@ -82,7 +87,9 @@
    			contentType: "application/json; charset=utf-8",
    			dataType : "json",
    			success : (result)=>{
+   				test();
    				if(result==1)
+   					
    					alert(" 추가되었습니덩 ");
    			},
    			error : ()=>{
@@ -92,8 +99,32 @@
    }
    function delUser(){
 	   $.ajax({
-		   url : "delete/"+$("#id").val(), type: "delete"
+		   url : "delete/"+$("#id").val(), type: "delete",
+		   success : ()=>{
+			   test();
+		   }
+		   
 	   })
+   }
+   <%-- 추가/삭제하면 바로 리스트에서 사라지게 만듬(새로고침안하더라도) --%>
+   function test(){
+	  var end = setTimeout(test,"100"); // 100초마다 자기자신을 호출해라
+	  console.log("test");
+	  $.ajax({
+	         url : "users", type : "get", dataType: "json",
+	         success : function(list){
+	        	if(list.length != listSize ){
+	            let msg ="";
+	            list.forEach( (data)=>{
+	               msg += "<b>이름 : "+data.name+"</b><br>";
+	               msg += "<b>나이 : "+data.age+"</b><hr>";
+	            })
+	            $("#data").html(msg);
+	            clearTimeout(end)
+	            }
+	         }, 
+	         error: () => {alert("문제발생")}
+	      });
    }
 </script>
 </head>
